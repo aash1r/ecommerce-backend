@@ -6,18 +6,25 @@ from app.database import get_db
 from app.models.user_model import User
 from app.schemas import user_schema
 
-router = APIRouter(prefix="/api", tags=["Auth"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.post(
-    "/signup",
+    "/register",
     status_code=status.HTTP_201_CREATED,
     response_model=user_schema.UserResponse,
 )
-def signup(user: user_schema.UserCreate, db: Session = Depends(get_db)):
+def register(user: user_schema.UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered!")
+
+    if len(user.password) < 7:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be atleast 7 characters long!",
+        )
+
     hashed_password = utils.hash(user.password)
     user_data = user.model_dump()
     user_data["password"] = hashed_password

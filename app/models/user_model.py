@@ -13,3 +13,4 @@ class User(Base):
     created_At = Column(
         TIMESTAMP(timezone=True), server_default=text("now()"), nullable=False
     )
+    role = Column(String, nullable=False)
