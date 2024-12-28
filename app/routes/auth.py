@@ -7,7 +7,7 @@ from app.core import security
 from app.database import get_db
 from app.models.user_model import User
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(tags=["Auth"])
 
 
 @router.post("/login")
@@ -26,6 +26,6 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Passwords do not match"
         )
 
-    access_token = security.create_access_token(data={"id": user.id})
+    access_token = security.create_access_token(data={"id": user.id, "role": user.role})
 
     return {"access_token": access_token, "token_type": "Bearer"}

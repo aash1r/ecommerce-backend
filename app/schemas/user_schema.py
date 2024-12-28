@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel, EmailStr
 
@@ -6,7 +7,7 @@ from pydantic import BaseModel, EmailStr
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    role: str = "user"
+    role: str
 
 
 class UserResponse(UserBase):
@@ -20,3 +21,8 @@ class UserResponse(UserBase):
 
 class UserCreate(UserBase):
     password: str
+
+
+class RoleEnum(str, Enum):
+    admin = "admin"
+    user = "user"
