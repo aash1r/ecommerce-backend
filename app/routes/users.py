@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app import utils
 from app.database import get_db
+from app.models import user_model
 from app.models.user_model import User
 from app.schemas import user_schema
 
@@ -34,3 +35,26 @@ def register(user: user_schema.UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+
+@router.get("/{id}")
+def get_users(id: int, db: Session = Depends(get_db)):
+    user = db.query(user_model.User).filter(user_model.User.id == id).first()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with the id {id} not found",
+        )
+    return user
+
+
+@router.delete("/{id}")
+def delete_user(id: int, db: Session = Depends(get_db)):
+    deleted_count = db.query(user_model.User).filter(user_model.User.id == id).delete()
+    if deleted_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with the id {id} is not found or already deleted!",
+        )
+    db.commit()
+    return {"message": "user deleted!"}
