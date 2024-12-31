@@ -28,4 +28,4 @@ def login(
 
     access_token = security.create_access_token(data={"id": user.id, "role": user.role})
 
-    return {"access_token": access_token, "token_type": "Bearer"}
+    return {"access_token": access_token, "token_type": "Bearer", "role": user.role}

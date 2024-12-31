@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.security import require_role
@@ -37,5 +37,28 @@ def get_products(
     db: Session = Depends(get_db), current_user=Depends(require_role(RoleEnum.admin))
 ):
     products = db.query(product_model.Product).all()
-
     return {"products": products}
+
+
+@router.delete("/admin/delete-product/{id}")
+def delete_product(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role(RoleEnum.admin)),
+):
+    name_product = (
+        db.query(product_model.Product).filter(product_model.Product.id == id).first()
+    )
+    product = (
+        db.query(product_model.Product).filter(product_model.Product.id == id).delete()
+    )
+    if product == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product not found or already deleted",
+        )
+    db.commit()
+    return {
+        "message": f"product at {id} succesfully deleted",
+        "name": f"{name_product.name}",
+    }
