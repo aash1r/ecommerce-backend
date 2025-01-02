@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -33,7 +35,7 @@ def add_products(
     "/admin/get-products",
     status_code=status.HTTP_200_OK,
 )
-def get_products(
+def get_all_products(
     db: Session = Depends(get_db), current_user=Depends(require_role(RoleEnum.admin))
 ):
     products = db.query(product_model.Product).all()
@@ -62,3 +64,37 @@ def delete_product(
         "message": f"product at {id} succesfully deleted",
         "name": f"{name_product.name}",
     }
+
+
+@router.get("/api/products", response_model=List[product_schema.ProductResponse])
+def get_products_by_category(category: str, db: Session = Depends(get_db)):
+    products = (
+        db.query(product_model.Product)
+        .filter(product_model.Product.category == category)
+        .all()
+    )
+
+    if not products:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No products found in category {category}",
+        )
+
+    return products
+
+
+@router.get(
+    "/api/products/search",
+    response_model=dict[str, List[product_schema.ProductResponse]],
+)
+def search_products(name: str, db: Session = Depends(get_db)):
+    products = (
+        db.query(product_model.Product)
+        .filter(product_model.Product.name.ilike(f"%{name}%"))
+        .all()
+    )
+    if not products:
+        raise HTTPException(
+            status_code=404, detail=f"Searched item {name} is not found!"
+        )
+    return {"products": products}

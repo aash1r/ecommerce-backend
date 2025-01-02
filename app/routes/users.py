@@ -7,11 +7,11 @@ from app.models import user_model
 from app.models.user_model import User
 from app.schemas import user_schema
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/api", tags=["Users"])
 
 
 @router.post(
-    "/register",
+    "/users/register",
     status_code=status.HTTP_201_CREATED,
     response_model=user_schema.UserResponse,
 )
@@ -37,7 +37,7 @@ def register(user: user_schema.UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.get("/{id}")
+@router.get("/users/{id}")
 def get_users(id: int, db: Session = Depends(get_db)):
     user = db.query(user_model.User).filter(user_model.User.id == id).first()
     if user is None:
@@ -48,7 +48,7 @@ def get_users(id: int, db: Session = Depends(get_db)):
     return user
 
 
-@router.delete("/{id}")
+@router.delete("/users/{id}")
 def delete_user(id: int, db: Session = Depends(get_db)):
     deleted_count = db.query(user_model.User).filter(user_model.User.id == id).delete()
     if deleted_count == 0:
