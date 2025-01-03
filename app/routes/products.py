@@ -14,7 +14,7 @@ router = APIRouter(tags=["Products"])
 
 
 @router.post(
-    "/admin/add-product",
+    "/admin/products/add-product",
     status_code=status.HTTP_201_CREATED,
     response_model=product_schema.ProductResponse,
 )
@@ -32,17 +32,17 @@ def add_products(
 
 
 @router.get(
-    "/admin/get-products",
+    "/admin/products/get-products",
     status_code=status.HTTP_200_OK,
 )
 def get_all_products(
-    db: Session = Depends(get_db), current_user=Depends(require_role(RoleEnum.admin))
+    db: Session = Depends(get_db),
 ):
     products = db.query(product_model.Product).all()
     return {"products": products}
 
 
-@router.delete("/admin/delete-product/{id}")
+@router.delete("/admin/products/delete-product/{id}")
 def delete_product(
     id: int,
     db: Session = Depends(get_db),
