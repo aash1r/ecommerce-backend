@@ -15,3 +15,15 @@ class ProductResponse(ProductBase):
     description: str
     images: str
     category: str
+
+
+class DealOfTheDayResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    price: int
+    average_rating: float
+    rating_count: int
+
+    class Config:
+        from_attributes = True

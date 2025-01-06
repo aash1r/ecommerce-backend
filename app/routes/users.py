@@ -38,7 +38,7 @@ def register(user: user_schema.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/users/{id}")
-def get_users(id: int, db: Session = Depends(get_db)):
+def get_user_by_id(id: int, db: Session = Depends(get_db)):
     user = db.query(user_model.User).filter(user_model.User.id == id).first()
     if user is None:
         raise HTTPException(
@@ -46,6 +46,13 @@ def get_users(id: int, db: Session = Depends(get_db)):
             detail=f"User with the id {id} not found",
         )
     return user
+
+
+@router.get("/users")
+def get_users(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+
+    return users
 
 
 @router.delete("/users/{id}")
