@@ -25,6 +25,7 @@ def add_products(
     db: Session = Depends(get_db),
     current_user=Depends(require_role(RoleEnum.admin)),
 ):
+    print(current_user.id)
     product_data = Product(**product.model_dump())
     db.add(product_data)
     db.commit()

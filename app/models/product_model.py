@@ -15,3 +15,4 @@ class Product(Base):
     price = Column(Integer, nullable=False)
     category = Column(String, nullable=False)
     ratings = relationship("Rating", back_populates="products")
+    cart_items = relationship("Cart", back_populates="products")

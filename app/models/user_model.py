@@ -17,3 +17,4 @@ class User(Base):
     )
     role = Column(String, nullable=False, default=RoleEnum.user)
     ratings = relationship("Rating", back_populates="user")
+    cart_items = relationship("Cart", back_populates="user")
